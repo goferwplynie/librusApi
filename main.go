@@ -7,7 +7,7 @@ import (
 	"log"
 
 	"github.com/goferwplynie/librusApi/client"
-	"github.com/goferwplynie/librusApi/timetable"
+	"github.com/goferwplynie/librusApi/grades"
 	"github.com/joho/godotenv"
 )
 
@@ -24,9 +24,11 @@ func main() {
 
 	client.Login(login, password)
 
-	timeTable, err := timetable.GetTimeTable(client)
+	grades, err := grades.GetGrades(client)
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(*timeTable)
+	for _, v := range grades {
+		fmt.Println(v)
+	}
 }
