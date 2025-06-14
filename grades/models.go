@@ -1,7 +1,5 @@
 package grades
 
-import "time"
-
 type GradesResponse struct {
 	Grades []struct {
 		ID     int `json:"Id"`
@@ -39,38 +37,4 @@ type GradesResponse struct {
 			URL string `json:"Url"`
 		} `json:"Comments,omitempty"`
 	} `json:"Grades"`
-}
-
-type Grade struct {
-	LessonId              int
-	SubjectId             int
-	StudentId             int
-	CategoryId            int
-	AddedById             int
-	Grade                 string
-	Date                  time.Time
-	AddDate               time.Time
-	Semester              int
-	IsConstituent         bool
-	IsSemesterGrade       bool
-	IsSemesterProposition bool
-	IsFinalGrade          bool
-	IsFinalProposition    bool
-}
-
-type GradeParams struct {
-	LessonId              int
-	SubjectId             int
-	StudentId             int
-	CategoryId            int
-	Semester              int
-	AddedById             int
-	Grade                 string
-	Date                  time.Time
-	AddDate               time.Time
-	IsConstituent         bool
-	IsSemesterGrade       bool
-	IsSemesterProposition bool
-	IsFinalGrade          bool
-	IsFinalProposition    bool
 }

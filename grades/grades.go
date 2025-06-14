@@ -32,7 +32,7 @@ func GetGrades(c *client.Client) ([]*Grade, error) {
 		}
 
 		grade := newGrade(GradeParams{
-			LessonId:           v.Lesson.ID,
+			client:             c,
 			SubjectId:          v.Subject.ID,
 			StudentId:          v.Student.ID,
 			CategoryId:         v.Category.ID,
@@ -56,7 +56,7 @@ func GetGrades(c *client.Client) ([]*Grade, error) {
 
 func newGrade(GradeParams GradeParams) *Grade {
 	return &Grade{
-		LessonId:              GradeParams.LessonId,
+		client:                GradeParams.client,
 		SubjectId:             GradeParams.SubjectId,
 		StudentId:             GradeParams.StudentId,
 		CategoryId:            GradeParams.CategoryId,
