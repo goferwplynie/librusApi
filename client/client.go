@@ -17,17 +17,17 @@ const (
 )
 
 type Client struct {
-	Host       string
-	Logged_in  bool
-	HttpClient *http.Client
+	host       string
+	logged_in  bool
+	httpClient *http.Client
 }
 
 func New() *Client {
 	jar, _ := cookiejar.New(nil)
 	return &Client{
-		Host:      "https://synergia.librus.pl/gateway/api/2.0/",
-		Logged_in: false,
-		HttpClient: &http.Client{
+		host:      "https://synergia.librus.pl/gateway/api/2.0/",
+		logged_in: false,
+		httpClient: &http.Client{
 			Jar: jar,
 		},
 	}
@@ -40,7 +40,7 @@ func (c *Client) request(method, target string, body io.Reader) (*http.Response,
 		return nil, fmt.Errorf("cant create request:\n%w", err)
 	}
 
-	resp, err := c.HttpClient.Do(req)
+	resp, err := c.httpClient.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("request failed:\n%w", err)
 	}
@@ -71,7 +71,7 @@ func (c *Client) Login(login string, password string) error {
 
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
-	resp, err := c.HttpClient.Do(req)
+	resp, err := c.httpClient.Do(req)
 	if err != nil {
 		return fmt.Errorf("request failed:\n%w", err)
 	}
@@ -93,5 +93,5 @@ func (c *Client) Login(login string, password string) error {
 }
 
 func (c *Client) Get(resource string, body io.Reader) (*http.Response, error) {
-	return c.request(http.MethodGet, c.Host+resource, body)
+	return c.request(http.MethodGet, c.host+resource, body)
 }
