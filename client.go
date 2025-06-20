@@ -1,4 +1,4 @@
-package client
+package librusApi
 
 import (
 	"fmt"
@@ -15,6 +15,14 @@ const (
 	tokenInfo     = "https://synergia.librus.pl/gateway/api/2.0/Auth/TokenInfo/"
 	loginEndpoint = "https://api.librus.pl/OAuth/Authorization?client_id=46"
 )
+
+type SessionExpiredError struct {
+	Message string
+}
+
+func (e SessionExpiredError) Error() string {
+	return fmt.Sprint(e.Message)
+}
 
 type Client struct {
 	host       string
@@ -95,7 +103,8 @@ func (c *Client) Login(login string, password string) error {
 func (c *Client) Get(resource string, body io.Reader) (*http.Response, error) {
 	resp, err := c.request(http.MethodGet, c.host+resource, body)
 	if err != nil && resp != nil {
-		return c.request(http.MethodGet, c.host+resource, body)
+		c.logged_in = false
+		return nil, SessionExpiredError{"Session Expired"}
 	}
 	return resp, err
 }

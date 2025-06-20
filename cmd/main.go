@@ -6,7 +6,7 @@ import (
 
 	"log"
 
-	"github.com/goferwplynie/librusApi/client"
+	"github.com/goferwplynie/librusApi"
 	"github.com/goferwplynie/librusApi/users"
 	"github.com/joho/godotenv"
 )
@@ -20,7 +20,7 @@ func main() {
 	login := os.Getenv("LIBRUS_LOGIN")
 	password := os.Getenv("LIBRUS_PASSWORD")
 
-	client := client.New()
+	client := librusApi.New()
 
 	client.Login(login, password)
 
