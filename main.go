@@ -7,7 +7,7 @@ import (
 	"log"
 
 	"github.com/goferwplynie/librusApi/client"
-	"github.com/goferwplynie/librusApi/grades"
+	"github.com/goferwplynie/librusApi/users"
 	"github.com/joho/godotenv"
 )
 
@@ -24,7 +24,7 @@ func main() {
 
 	client.Login(login, password)
 
-	grades, err := grades.GetGrades(client)
+	grades, err := users.GetUsers(client)
 	if err != nil {
 		panic(err)
 	}

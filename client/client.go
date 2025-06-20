@@ -93,5 +93,9 @@ func (c *Client) Login(login string, password string) error {
 }
 
 func (c *Client) Get(resource string, body io.Reader) (*http.Response, error) {
-	return c.request(http.MethodGet, c.host+resource, body)
+	resp, err := c.request(http.MethodGet, c.host+resource, body)
+	if err != nil && resp != nil {
+		return c.request(http.MethodGet, c.host+resource, body)
+	}
+	return resp, err
 }

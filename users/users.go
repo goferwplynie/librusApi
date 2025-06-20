@@ -24,3 +24,21 @@ func GetUser(c *client.Client, id int) (*User, error) {
 
 	return &user, nil
 }
+
+func GetUsers(c *client.Client) ([]*User, error) {
+	resp, err := c.Get("Users", nil)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var users struct {
+		Users []*User `json:"Users"`
+	}
+
+	if err := json.NewDecoder(resp.Body).Decode(&users); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal json")
+	}
+
+	return users.Users, nil
+}
