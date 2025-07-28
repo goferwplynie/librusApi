@@ -16,20 +16,13 @@ const (
 	loginEndpoint = "https://api.librus.pl/OAuth/Authorization?client_id=46"
 )
 
-type SessionExpiredError struct {
-	Message string
-}
-
-func (e SessionExpiredError) Error() string {
-	return fmt.Sprint(e.Message)
-}
-
 type Client struct {
 	host       string
 	logged_in  bool
 	httpClient *http.Client
 }
 
+// create new client
 func New() *Client {
 	jar, _ := cookiejar.New(nil)
 	return &Client{
@@ -59,6 +52,7 @@ func (c *Client) request(method, target string, body io.Reader) (*http.Response,
 	return resp, nil
 }
 
+// login to librus api. passes whole auth flow. doesn't save login info so after session expired error you have to login again
 func (c *Client) Login(login string, password string) error {
 
 	_, err := c.request(http.MethodGet, testauthUrl, nil)
@@ -100,11 +94,36 @@ func (c *Client) Login(login string, password string) error {
 	return nil
 }
 
+// Helper function for getting resource from api.
 func (c *Client) Get(resource string, body io.Reader) (*http.Response, error) {
 	resp, err := c.request(http.MethodGet, c.host+resource, body)
-	if err != nil && resp != nil {
+	if resp.StatusCode == 401 {
 		c.logged_in = false
-		return nil, SessionExpiredError{"Session Expired"}
+		return nil, SessionExpiredError{}
 	}
 	return resp, err
+}
+
+func WithReauth[T any](
+	method func() (T, error),
+	loginFunc func() error,
+	retries int,
+) (T, error) {
+	var zeroVal T
+	for range retries + 1 {
+		resp, err := method()
+		if err == nil {
+			return resp, nil
+		}
+
+		if IsSessionExpired(err) {
+			err := loginFunc()
+			if err != nil {
+				return resp, fmt.Errorf("error in login func: %v", err)
+			}
+			continue
+		}
+		return zeroVal, err
+	}
+	return zeroVal, fmt.Errorf("reauth failed")
 }

@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"os"
 
-	"log"
-
 	"github.com/goferwplynie/librusApi"
 	"github.com/goferwplynie/librusApi/users"
 	"github.com/joho/godotenv"
@@ -14,7 +12,7 @@ import (
 func main() {
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatal("Error loading .env file")
+		panic(err)
 	}
 
 	login := os.Getenv("LIBRUS_LOGIN")
@@ -24,11 +22,16 @@ func main() {
 
 	client.Login(login, password)
 
-	grades, err := users.GetUsers(client)
-	if err != nil {
-		panic(err)
-	}
-	for _, v := range grades {
+	users, err := librusApi.WithReauth(
+		func() ([]*users.User, error) {
+			return users.GetUsers(client)
+		},
+		func() error {
+			return client.Login(login, password)
+		},
+		1)
+
+	for _, v := range users {
 		fmt.Println(v)
 	}
 }
