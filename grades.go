@@ -1,14 +1,12 @@
-package grades
+package librusApi
 
 import (
 	"encoding/json"
 	"fmt"
 	"time"
-
-	"github.com/goferwplynie/librusApi/client"
 )
 
-func GetGrades(c *client.Client) ([]*Grade, error) {
+func GetGrades(c *Client) ([]*Grade, error) {
 	grades := make([]*Grade, 0)
 	gradesJsonResp, err := c.Get("Grades", nil)
 	if err != nil {

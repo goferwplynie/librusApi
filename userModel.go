@@ -1,4 +1,4 @@
-package users
+package librusApi
 
 type User struct {
 	ID                       int    `json:"Id"`

@@ -5,7 +5,6 @@ import (
 	"os"
 
 	"github.com/goferwplynie/librusApi"
-	"github.com/goferwplynie/librusApi/users"
 	"github.com/joho/godotenv"
 )
 
@@ -23,8 +22,8 @@ func main() {
 	client.Login(login, password)
 
 	users, err := librusApi.WithReauth(
-		func() ([]*users.User, error) {
-			return users.GetUsers(client)
+		func() ([]*librusApi.User, error) {
+			return librusApi.GetUsers(client)
 		},
 		func() error {
 			return client.Login(login, password)

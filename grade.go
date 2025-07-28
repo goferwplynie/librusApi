@@ -1,14 +1,11 @@
-package grades
+package librusApi
 
 import (
 	"time"
-
-	"github.com/goferwplynie/librusApi/client"
-	"github.com/goferwplynie/librusApi/users"
 )
 
 type Grade struct {
-	client                *client.Client
+	client                *Client
 	SubjectId             int
 	StudentId             int
 	CategoryId            int
@@ -25,7 +22,7 @@ type Grade struct {
 }
 
 type GradeParams struct {
-	client                *client.Client
+	client                *Client
 	SubjectId             int
 	StudentId             int
 	CategoryId            int
@@ -41,6 +38,6 @@ type GradeParams struct {
 	IsFinalProposition    bool
 }
 
-func (g Grade) GetTeacher() (*users.User, error) {
-	return users.GetUser(g.client, g.AddedById)
+func (g Grade) GetTeacher() (*User, error) {
+	return GetUser(g.client, g.AddedById)
 }

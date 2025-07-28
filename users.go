@@ -1,14 +1,12 @@
-package users
+package librusApi
 
 import (
 	"encoding/json"
 	"fmt"
 	"strconv"
-
-	"github.com/goferwplynie/librusApi"
 )
 
-func GetUser(c *librusApi.Client, id int) (*User, error) {
+func GetUser(c *Client, id int) (*User, error) {
 	strId := strconv.Itoa(id)
 
 	resp, err := c.Get("Users/"+strId, nil)
@@ -25,7 +23,7 @@ func GetUser(c *librusApi.Client, id int) (*User, error) {
 	return &user, nil
 }
 
-func GetUsers(c *librusApi.Client) ([]*User, error) {
+func GetUsers(c *Client) ([]*User, error) {
 	resp, err := c.Get("Users", nil)
 	if err != nil {
 		return nil, err

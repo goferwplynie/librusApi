@@ -39,13 +39,11 @@ basic example for getting all available users
 ```go
 package main
 
-
 import (
 	"fmt"
 	"os"
 
 	"github.com/goferwplynie/librusApi"
-	"github.com/goferwplynie/librusApi/users"
 	"github.com/joho/godotenv"
 )
 
@@ -63,8 +61,8 @@ func main() {
 	client.Login(login, password)
 
 	users, err := librusApi.WithReauth(
-		func() ([]*users.User, error) {
-			return users.GetUsers(client)
+		func() ([]*librusApi.User, error) {
+			return librusApi.GetUsers(client)
 		},
 		func() error {
 			return client.Login(login, password)
@@ -86,7 +84,7 @@ after this you should be able to get all available resources. 1 session is 10-15
 ```go
 	users, err := librusApi.WithReauth(
 		func() ([]*users.User, error) {
-			return users.GetUsers(client)
+			return librusApi.GetUsers(client)
 		},
 		func() error {
 			return client.Login(login, password)
@@ -95,7 +93,7 @@ after this you should be able to get all available resources. 1 session is 10-15
 ```
 All functions that are supposed to get resources from api take `*librusApi.Client` as argument.
 ```go
-users.GetUsers(client)
+librusApi.GetUsers(client)
 ```
 
 Librus API doesn't explictly say if session expired so when program gets `Access Denied` it assumes that session expired and throws special error `SessionExpiredError`.

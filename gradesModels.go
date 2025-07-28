@@ -1,4 +1,4 @@
-package grades
+package librusApi
 
 type GradesResponse struct {
 	Grades []struct {
