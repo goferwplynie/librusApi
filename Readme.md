@@ -83,7 +83,7 @@ first you have to create new client and use login method with your login and pas
 after this you should be able to get all available resources. 1 session is 10-15 minutes long so i recommend using `librusApi.withReauth(method, loginFunc, retries)`.
 ```go
 	users, err := librusApi.WithReauth(
-		func() ([]*users.User, error) {
+		func() ([]*librusApi.User, error) {
 			return librusApi.GetUsers(client)
 		},
 		func() error {
