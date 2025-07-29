@@ -23,7 +23,7 @@ func GetUser(c *Client, id int) (*User, error) {
 	return &user, nil
 }
 
-func GetUsers(c *Client) ([]*User, error) {
+func GetUsers(c *Client) ([]User, error) {
 	resp, err := c.Get("Users", nil)
 	if err != nil {
 		return nil, err
@@ -31,7 +31,7 @@ func GetUsers(c *Client) ([]*User, error) {
 	defer resp.Body.Close()
 
 	var users struct {
-		Users []*User `json:"Users"`
+		Users []User `json:"Users"`
 	}
 
 	if err := json.NewDecoder(resp.Body).Decode(&users); err != nil {

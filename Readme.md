@@ -7,7 +7,8 @@ Librus API library. I wanted to make some widgets for my system but most of the 
 
 - [x] `Users` (teachers)
 - [x] `Grades`  
-- [ ] `Me`  
+- [x] `Me`  
+- - [ ] `GradeAverage`
 - [ ] `PointGrades`  
 - [ ] `Subjects`  
 - [ ] `Lessons`  

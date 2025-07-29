@@ -21,16 +21,14 @@ func main() {
 
 	client.Login(login, password)
 
-	users, err := librusApi.WithReauth(
-		func() ([]*librusApi.User, error) {
-			return librusApi.GetUsers(client)
+	userInfo, err := librusApi.WithReauth(
+		func() (*librusApi.UserInfo, error) {
+			return librusApi.GetUserInfo(client)
 		},
 		func() error {
 			return client.Login(login, password)
 		},
 		1)
 
-	for _, v := range users {
-		fmt.Println(v)
-	}
+	fmt.Println(userInfo)
 }
