@@ -14,7 +14,7 @@ func GetGrades(c *Client) ([]*Grade, error) {
 	}
 	defer gradesJsonResp.Body.Close()
 
-	var gradesResp GradesResponse
+	var gradesResp gradesResponse
 	if err := json.NewDecoder(gradesJsonResp.Body).Decode(&gradesResp); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal json:\n%w", err)
 	}

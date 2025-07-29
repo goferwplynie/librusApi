@@ -1,6 +1,6 @@
 package librusApi
 
-type GradesResponse struct {
+type gradesResponse struct {
 	Grades []struct {
 		ID     int `json:"Id"`
 		Lesson struct {
