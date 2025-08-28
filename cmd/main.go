@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/goferwplynie/librusApi"
@@ -29,6 +28,9 @@ func main() {
 			return client.Login(login, password)
 		},
 		1)
+	if err != nil {
+		panic(err)
+	}
 
-	fmt.Println(userInfo)
+	println("Hello", userInfo.User.FirstName)
 }
