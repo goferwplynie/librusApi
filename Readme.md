@@ -15,8 +15,9 @@ Librus API library. I wanted to make some widgets for my system but most of the 
 - [ ] `Realizations` (maybe) 
 - [ ] `Timetables` (badly designed so maybe in future) 
 - [ ] `TimetableEntries` 
-- [ ] `Classes`  
-- [ ] `Classrooms`  
+- [x] `Classes`  
+- [x] `Classrooms`  
+- [x] `Schools`
 - [ ] `ClassFreeDays`  
 - [ ] `SchoolFreeDays`  
 - [ ] `Attendances`  
