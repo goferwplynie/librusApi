@@ -49,6 +49,8 @@ go run ./examples/timetable
 | `Me(ctx)` | logged in account |
 | `Grades(ctx)` | grades (`Grade.Teacher(ctx)`, `Grade.Subject(ctx)`, `Grade.Category(ctx)` and `Grade.Comments(ctx)` fetch what the grade points to) |
 | `GradeCategories(ctx)`, `GradeCategory(ctx, id)` | grade categories with weights |
+| `PointGrades(ctx)`, `PointGrade(ctx, id)` | point grades (`Category`, `Comments`, `Subject` and `Teacher` work like on `Grade`) |
+| `PointGradeCategories(ctx)`, `PointGradeComments(ctx)` | point grade categories (with point ranges) and comments |
 | `GradeComments(ctx)`, `GradeComment(ctx, id)` | teachers' comments to grades |
 | `Timetable(ctx, day)` | lessons of the week (Mon-Sun) containing `day`, incl. canceled lessons and substitutions (`OriginalLesson.Subject(ctx)` fetches the subject of a replaced lesson) |
 | `TimetableDay(ctx, day)` | lessons of a single day |
@@ -83,10 +85,10 @@ if errors.As(err, &apiErr) && apiErr.StatusCode == 403 {
 - [x] `Me`, `Users`, `Classes`, `Classrooms`, `Schools`
 - [x] `Subjects`
 - [x] Grade categories and comments
-- [x] `Grades` 
+- [x] Point grades
+- [x] `Grades`
 
 ### 1.0
-- [ ] Point grades - `PointGrades`
 - [ ] Averages - computed locally from grade weights, because `Grades/Averages` can be disabled by the school
 - [ ] Tests and quizzes (terminarz) - `HomeWorks`, `HomeWorks/Categories`
 - [ ] Homework - `HomeWorkAssignments`
