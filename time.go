@@ -33,9 +33,13 @@ func parseDateTime(s string) (time.Time, error) {
 	return t, nil
 }
 
-// atHour returns date at the "15:04" hour.
+// atHour returns date at the "15:04" or "15:04:05" hour.
 func atHour(date time.Time, hour string) (time.Time, error) {
-	h, err := time.Parse("15:04", hour)
+	layout := "15:04"
+	if len(hour) > len(layout) {
+		layout = time.TimeOnly
+	}
+	h, err := time.Parse(layout, hour)
 	if err != nil {
 		return time.Time{}, fmt.Errorf("librus: parsing hour: %w", err)
 	}

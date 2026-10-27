@@ -54,6 +54,9 @@ go run ./examples/timetable
 | `GradeComments(ctx)`, `GradeComment(ctx, id)` | teachers' comments to grades |
 | `Timetable(ctx, day)` | lessons of the week (Mon-Sun) containing `day`, incl. canceled lessons and substitutions (`OriginalLesson.Subject(ctx)` fetches the subject of a replaced lesson) |
 | `TimetableDay(ctx, day)` | lessons of a single day |
+| `Events(ctx)`, `Event(ctx, id)` | calendar entries ("terminarz"): tests, quizzes, trips... (`Category`, `Subject` and `CreatedBy` fetch what the event points to) |
+| `EventCategories(ctx)`, `EventCategory(ctx, id)` | kinds of calendar events, e.g. "Sprawdzian" |
+| `HomeworkAssignments(ctx)`, `HomeworkAssignment(ctx, id)` | homework set by teachers |
 | `Users(ctx)`, `User(ctx, id)` | teachers and other users |
 | `Subjects(ctx)`, `Subject(ctx, id)` | school subjects (`Grade.Subject(ctx)` fetches the subject of a grade) |
 | `Class(ctx)` | student's class |
@@ -86,12 +89,11 @@ if errors.As(err, &apiErr) && apiErr.StatusCode == 403 {
 - [x] `Subjects`
 - [x] Grade categories and comments
 - [x] Point grades
+- [x] Tests and quizzes (terminarz) and homework
 - [x] `Grades`
 
 ### 1.0
 - [ ] Averages - computed locally from grade weights, because `Grades/Averages` can be disabled by the school
-- [ ] Tests and quizzes (terminarz) - `HomeWorks`, `HomeWorks/Categories`
-- [ ] Homework - `HomeWorkAssignments`
 - [ ] Attendance - `Attendances`, `Attendances/Types`, `Lessons`
 - [ ] Justifications - `Justifications`
 - [ ] Free days - `SchoolFreeDays`
