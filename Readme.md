@@ -57,6 +57,9 @@ go run ./examples/timetable
 | `Events(ctx)`, `Event(ctx, id)` | calendar entries ("terminarz"): tests, quizzes, trips... (`Category`, `Subject` and `CreatedBy` fetch what the event points to) |
 | `EventCategories(ctx)`, `EventCategory(ctx, id)` | kinds of calendar events, e.g. "Sprawdzian" |
 | `HomeworkAssignments(ctx)`, `HomeworkAssignment(ctx, id)` | homework set by teachers |
+| `Attendances(ctx)` | attendance at lessons (`Attendance.Type(ctx)`, `Attendance.Lesson(ctx)`) |
+| `AttendanceTypes(ctx)`, `AttendanceType(ctx, id)` | kinds of attendance (presence, absence, lateness...) |
+| `Lessons(ctx)`, `Lesson(ctx, id)` | lessons of the class: which teacher teaches which subject |
 | `Users(ctx)`, `User(ctx, id)` | teachers and other users |
 | `Subjects(ctx)`, `Subject(ctx, id)` | school subjects (`Grade.Subject(ctx)` fetches the subject of a grade) |
 | `Class(ctx)` | student's class |
@@ -89,12 +92,12 @@ if errors.As(err, &apiErr) && apiErr.StatusCode == 403 {
 - [x] `Subjects`
 - [x] Grade categories and comments
 - [x] Point grades
+- [x] Attendance and lessons
 - [x] Tests and quizzes (terminarz) and homework
 - [x] `Grades`
 
 ### 1.0
 - [ ] Averages - computed locally from grade weights, because `Grades/Averages` can be disabled by the school
-- [ ] Attendance - `Attendances`, `Attendances/Types`, `Lessons`
 - [ ] Justifications - `Justifications`
 - [ ] Free days - `SchoolFreeDays`
 - [ ] Substitutions - `Calendars/Substitutions`
