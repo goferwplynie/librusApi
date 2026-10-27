@@ -1,8 +1,7 @@
 package librus
 
 import (
-	"encoding/json"
-	"fmt"
+	"context"
 	"strconv"
 )
 
@@ -18,40 +17,23 @@ type User struct {
 }
 
 // User returns the user (e.g. a teacher) with the given id.
-func (c *Client) User(id int) (*User, error) {
-	strId := strconv.Itoa(id)
-
-	resp, err := c.Get("Users/" + strId)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	var userResp struct {
+func (c *Client) User(ctx context.Context, id int) (*User, error) {
+	var resp struct {
 		User User `json:"User"`
 	}
-	if err := json.NewDecoder(resp.Body).Decode(&userResp); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal json:\n%w", err)
+	if err := c.getJSON(ctx, "Users/"+strconv.Itoa(id), &resp); err != nil {
+		return nil, err
 	}
-
-	return &userResp.User, nil
+	return &resp.User, nil
 }
 
 // Users returns all users visible to the logged in account.
-func (c *Client) Users() ([]User, error) {
-	resp, err := c.Get("Users")
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	var users struct {
+func (c *Client) Users(ctx context.Context) ([]User, error) {
+	var resp struct {
 		Users []User `json:"Users"`
 	}
-
-	if err := json.NewDecoder(resp.Body).Decode(&users); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal json")
+	if err := c.getJSON(ctx, "Users", &resp); err != nil {
+		return nil, err
 	}
-
-	return users.Users, nil
+	return resp.Users, nil
 }

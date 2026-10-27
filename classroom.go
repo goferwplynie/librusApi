@@ -1,9 +1,6 @@
 package librus
 
-import (
-	"encoding/json"
-	"fmt"
-)
+import "context"
 
 type classroomsResponse struct {
 	Classrooms []Classroom `json:"Classrooms"`
@@ -20,17 +17,10 @@ type Classroom struct {
 }
 
 // Classrooms returns all classrooms listed in the school.
-func (c *Client) Classrooms() ([]Classroom, error) {
-	resp, err := c.Get("Classrooms")
-	if err != nil {
+func (c *Client) Classrooms(ctx context.Context) ([]Classroom, error) {
+	var resp classroomsResponse
+	if err := c.getJSON(ctx, "Classrooms", &resp); err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
-
-	var classroomsResp classroomsResponse
-	if err := json.NewDecoder(resp.Body).Decode(&classroomsResp); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal json: %v", err)
-	}
-
-	return classroomsResp.Classrooms, nil
+	return resp.Classrooms, nil
 }

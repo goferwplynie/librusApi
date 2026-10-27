@@ -1,9 +1,6 @@
 package librus
 
-import (
-	"encoding/json"
-	"fmt"
-)
+import "context"
 
 type meResponse struct {
 	Me UserInfo `json:"Me"`
@@ -34,17 +31,10 @@ type UserInfo struct {
 }
 
 // Me returns information about the logged in account.
-func (c *Client) Me() (*UserInfo, error) {
-	resp, err := c.Get("Me")
-
-	if err != nil {
+func (c *Client) Me(ctx context.Context) (*UserInfo, error) {
+	var resp meResponse
+	if err := c.getJSON(ctx, "Me", &resp); err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
-
-	var responseObject meResponse
-	if err := json.NewDecoder(resp.Body).Decode(&responseObject); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal json:\n%w", err)
-	}
-	return &responseObject.Me, nil
+	return &resp.Me, nil
 }

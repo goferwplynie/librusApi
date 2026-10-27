@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"os"
 
@@ -13,17 +14,13 @@ func main() {
 		panic(err)
 	}
 
-	login := os.Getenv("LIBRUS_LOGIN")
-	password := os.Getenv("LIBRUS_PASSWORD")
-
+	ctx := context.Background()
 	client := librus.New()
-	if err := client.Login(login, password); err != nil {
+	if err := client.Login(ctx, os.Getenv("LIBRUS_LOGIN"), os.Getenv("LIBRUS_PASSWORD")); err != nil {
 		panic(err)
 	}
 
-	me, err := librus.WithReauth(client.Me, func() error {
-		return client.Login(login, password)
-	}, 1)
+	me, err := client.Me(ctx)
 	if err != nil {
 		panic(err)
 	}

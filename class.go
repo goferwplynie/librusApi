@@ -1,9 +1,6 @@
 package librus
 
-import (
-	"encoding/json"
-	"fmt"
-)
+import "context"
 
 type classResponse struct {
 	Class Class  `json:"Class"`
@@ -28,17 +25,10 @@ type ClassTutor struct {
 }
 
 // Class returns information about the logged in student's class.
-func (c *Client) Class() (*Class, error) {
-	resp, err := c.Get("Classes")
-	if err != nil {
+func (c *Client) Class(ctx context.Context) (*Class, error) {
+	var resp classResponse
+	if err := c.getJSON(ctx, "Classes", &resp); err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
-
-	var classResp classResponse
-	if err := json.NewDecoder(resp.Body).Decode(&classResp); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal json: %v", err)
-	}
-
-	return &classResp.Class, nil
+	return &resp.Class, nil
 }
