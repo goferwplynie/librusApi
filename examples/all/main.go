@@ -89,7 +89,11 @@ func main() {
 	section("Averages")
 	if averages, err := client.Averages(ctx); check("averages", err) {
 		for _, a := range averages {
-			fmt.Printf("%-22s semester 1: %.2f (%d counted)\n", subjects[a.SubjectID], a.Semester1.Value, a.Semester1.Count)
+			unit := ""
+			if a.UsesPoints {
+				unit = "% of points"
+			}
+			fmt.Printf("%-22s semester 1: %.2f%s (%d counted)\n", subjects[a.SubjectID], a.Semester1.Value, unit, a.Semester1.Count)
 		}
 	}
 

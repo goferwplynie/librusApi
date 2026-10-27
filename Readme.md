@@ -64,7 +64,7 @@ go run ./examples/all
 | `Justifications(ctx)`, `Justification(ctx, id)` | absence justifications sent by parents |
 | `SchoolFreeDays(ctx)` | school days off, with `Includes(day)` |
 | `Substitutions(ctx)`, `Substitution(ctx, id)` | timetable changes: canceled, moved and substituted lessons |
-| `Averages(ctx)` | averages per subject, computed locally (see `CalculateAverages` for the rules) |
+| `Averages(ctx)` | averages per subject, computed locally. Subjects graded with points get the percent of possible points instead (see `CalculateAverages` for the rules) |
 | `Users(ctx)`, `User(ctx, id)` | teachers and other users |
 | `Subjects(ctx)`, `Subject(ctx, id)` | school subjects (`Grade.Subject(ctx)` fetches the subject of a grade) |
 | `Class(ctx)` | student's class |
