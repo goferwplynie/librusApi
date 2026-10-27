@@ -2,7 +2,6 @@ package librus
 
 import (
 	"context"
-	"fmt"
 	"time"
 )
 
@@ -76,13 +75,13 @@ func (c *Client) Grades(ctx context.Context) ([]*Grade, error) {
 
 	grades := make([]*Grade, 0, len(resp.Grades))
 	for _, v := range resp.Grades {
-		date, err := time.Parse(time.DateOnly, v.Date)
+		date, err := parseDate(v.Date)
 		if err != nil {
-			return nil, fmt.Errorf("librus: parsing grade date: %w", err)
+			return nil, err
 		}
-		addDate, err := time.Parse(time.DateTime, v.AddDate)
+		addDate, err := parseDateTime(v.AddDate)
 		if err != nil {
-			return nil, fmt.Errorf("librus: parsing grade add date: %w", err)
+			return nil, err
 		}
 
 		grades = append(grades, &Grade{

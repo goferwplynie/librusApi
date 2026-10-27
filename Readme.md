@@ -35,10 +35,11 @@ for _, g := range grades {
 }
 ```
 
-A runnable example is in [`examples/basic`](examples/basic/main.go). It reads `LIBRUS_LOGIN` and `LIBRUS_PASSWORD` from a `.env` file in the repo root:
+Runnable examples are in [`examples`](examples): [`basic`](examples/basic/main.go) logs in and greets you, [`timetable`](examples/timetable/main.go) prints this week's timetable. They read `LIBRUS_LOGIN` and `LIBRUS_PASSWORD` from a `.env` file in the repo root:
 
 ```sh
 go run ./examples/basic
+go run ./examples/timetable
 ```
 
 ### Available methods
@@ -47,6 +48,8 @@ go run ./examples/basic
 |---|---|
 | `Me(ctx)` | logged in account |
 | `Grades(ctx)` | grades (`Grade.Teacher(ctx)` fetches who added it) |
+| `Timetable(ctx, day)` | lessons of the week (Mon-Sun) containing `day`, incl. canceled lessons and substitutions |
+| `TimetableDay(ctx, day)` | lessons of a single day |
 | `Users(ctx)`, `User(ctx, id)` | teachers and other users |
 | `Class(ctx)` | student's class |
 | `Classrooms(ctx)` | school classrooms |
@@ -73,11 +76,11 @@ if errors.As(err, &apiErr) && apiErr.StatusCode == 403 {
 ## Roadmap
 
 ### Done
+- [x] Timetable
 - [x] `Me`, `Users`, `Classes`, `Classrooms`, `Schools`
 - [x] `Grades` (IDs only, no subject or category names yet)
 
 ### 1.0
-- [ ] Timetable - `Timetables?weekStart=YYYY-MM-DD`
 - [ ] Subjects - `Subjects`
 - [ ] Grade categories and comments - `Grades/Categories`, `Grades/Comments`
 - [ ] Point grades - `PointGrades`
