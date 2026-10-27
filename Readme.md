@@ -63,6 +63,7 @@ go run ./examples/timetable
 | `Justifications(ctx)`, `Justification(ctx, id)` | absence justifications sent by parents |
 | `SchoolFreeDays(ctx)` | school days off, with `Includes(day)` |
 | `Substitutions(ctx)`, `Substitution(ctx, id)` | timetable changes: canceled, moved and substituted lessons |
+| `Averages(ctx)` | averages per subject, computed locally (see `CalculateAverages` for the rules) |
 | `Users(ctx)`, `User(ctx, id)` | teachers and other users |
 | `Subjects(ctx)`, `Subject(ctx, id)` | school subjects (`Grade.Subject(ctx)` fetches the subject of a grade) |
 | `Class(ctx)` | student's class |
@@ -95,13 +96,13 @@ if errors.As(err, &apiErr) && apiErr.StatusCode == 403 {
 - [x] `Subjects`
 - [x] Grade categories and comments
 - [x] Point grades
+- [x] Averages - computed locally from grade weights, because `Grades/Averages` can be disabled by the school
 - [x] Attendance and lessons
 - [x] Justifications, free days and substitutions
 - [x] Tests and quizzes (terminarz) and homework
 - [x] `Grades`
 
 ### 1.0
-- [ ] Averages - computed locally from grade weights, because `Grades/Averages` can be disabled by the school
 
 ### Later
 - [ ] Combined calendar (timetable, tests, trips, free days)
