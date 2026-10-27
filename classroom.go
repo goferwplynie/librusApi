@@ -5,6 +5,20 @@ import (
 	"fmt"
 )
 
+type classroomsResponse struct {
+	Classrooms []Classroom `json:"Classrooms"`
+	URL        string      `json:"Url"`
+}
+
+type Classroom struct {
+	SchoolCommonRoom bool    `json:"SchoolCommonRoom"`
+	Description      *string `json:"Description,omitempty"`
+	Symbol           string  `json:"Symbol"`
+	Size             int64   `json:"Size"`
+	ID               int64   `json:"Id"`
+	Name             string  `json:"Name"`
+}
+
 // Get all listed classrooms
 func GetClassrooms(c *Client) ([]Classroom, error) {
 	resp, err := c.Get("Classrooms", nil)

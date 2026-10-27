@@ -6,6 +6,17 @@ import (
 	"strconv"
 )
 
+type User struct {
+	ID                       int    `json:"Id"`
+	AccountID                string `json:"AccountId"`
+	AccountNumericIdentifier int    `json:"AccountNumericIdentifier"`
+	FirstName                string `json:"FirstName"`
+	LastName                 string `json:"LastName"`
+	IsSchoolAdministrator    bool   `json:"IsSchoolAdministrator"`
+	IsEmployee               bool   `json:"IsEmployee"`
+	GroupID                  int    `json:"GroupId"`
+}
+
 func GetUser(c *Client, id int) (*User, error) {
 	strId := strconv.Itoa(id)
 

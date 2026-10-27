@@ -103,27 +103,3 @@ func (c *Client) Get(resource string, body io.Reader) (*http.Response, error) {
 	}
 	return resp, err
 }
-
-func WithReauth[T any](
-	method func() (T, error),
-	loginFunc func() error,
-	retries int,
-) (T, error) {
-	var zeroVal T
-	for range retries + 1 {
-		resp, err := method()
-		if err == nil {
-			return resp, nil
-		}
-
-		if IsSessionExpired(err) {
-			err := loginFunc()
-			if err != nil {
-				return resp, fmt.Errorf("error in login func: %v", err)
-			}
-			continue
-		}
-		return zeroVal, err
-	}
-	return zeroVal, fmt.Errorf("reauth failed")
-}
