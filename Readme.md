@@ -60,6 +60,9 @@ go run ./examples/timetable
 | `Attendances(ctx)` | attendance at lessons (`Attendance.Type(ctx)`, `Attendance.Lesson(ctx)`) |
 | `AttendanceTypes(ctx)`, `AttendanceType(ctx, id)` | kinds of attendance (presence, absence, lateness...) |
 | `Lessons(ctx)`, `Lesson(ctx, id)` | lessons of the class: which teacher teaches which subject |
+| `Justifications(ctx)`, `Justification(ctx, id)` | absence justifications sent by parents |
+| `SchoolFreeDays(ctx)` | school days off, with `Includes(day)` |
+| `Substitutions(ctx)`, `Substitution(ctx, id)` | timetable changes: canceled, moved and substituted lessons |
 | `Users(ctx)`, `User(ctx, id)` | teachers and other users |
 | `Subjects(ctx)`, `Subject(ctx, id)` | school subjects (`Grade.Subject(ctx)` fetches the subject of a grade) |
 | `Class(ctx)` | student's class |
@@ -93,14 +96,12 @@ if errors.As(err, &apiErr) && apiErr.StatusCode == 403 {
 - [x] Grade categories and comments
 - [x] Point grades
 - [x] Attendance and lessons
+- [x] Justifications, free days and substitutions
 - [x] Tests and quizzes (terminarz) and homework
 - [x] `Grades`
 
 ### 1.0
 - [ ] Averages - computed locally from grade weights, because `Grades/Averages` can be disabled by the school
-- [ ] Justifications - `Justifications`
-- [ ] Free days - `SchoolFreeDays`
-- [ ] Substitutions - `Calendars/Substitutions`
 
 ### Later
 - [ ] Combined calendar (timetable, tests, trips, free days)
