@@ -18,7 +18,9 @@ func main() {
 
 	client := librusApi.New()
 
-	client.Login(login, password)
+	if err := client.Login(login, password); err != nil {
+		panic(err)
+	}
 
 	userInfo, err := librusApi.WithReauth(
 		func() (*librusApi.UserInfo, error) {

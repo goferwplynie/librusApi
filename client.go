@@ -1,19 +1,20 @@
 package librusApi
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
 	"net/http/cookiejar"
 	"net/url"
-	"strings"
 )
 
 const (
-	testauthUrl   = "https://api.librus.pl/OAuth/Authorization?client_id=46&response_type=code&scope=mydata"
-	grantUrl      = "https://api.librus.pl/OAuth/Authorization/Grant?client_id=46"
-	tokenInfo     = "https://synergia.librus.pl/gateway/api/2.0/Auth/TokenInfo/"
-	loginEndpoint = "https://api.librus.pl/OAuth/Authorization?client_id=46"
+	// Entry point of the web login flow. Synergia redirects from here to the OAuth
+	// authorization page with a state it later checks when the code comes back.
+	portalLoginUrl = "https://synergia.librus.pl/loguj/portalRodzina"
+	tokenInfoUrl   = "https://synergia.librus.pl/gateway/api/2.0/Auth/TokenInfo/"
+	maxAuthHops    = 10
 )
 
 type Client struct {
@@ -54,9 +55,28 @@ func (c *Client) request(method, target string, body io.Reader) (*http.Response,
 
 // login to librus api. passes whole auth flow. doesn't save login info so after session expired error you have to login again
 func (c *Client) Login(login string, password string) error {
+	// redirects are followed manually so every hop stays on the same cookie jar
+	auth := *c.httpClient
+	auth.CheckRedirect = func(*http.Request, []*http.Request) error {
+		return http.ErrUseLastResponse
+	}
 
-	_, err := c.request(http.MethodGet, testauthUrl, nil)
+	authUrl, err := redirectTarget(&auth, portalLoginUrl)
 	if err != nil {
+		return err
+	}
+	if authUrl == "" {
+		return fmt.Errorf("librus login page didn't redirect to authorization")
+	}
+
+	// authorization page may redirect once more to the actual login form
+	loginUrl, err := redirectTarget(&auth, authUrl)
+	if err != nil {
+		return err
+	}
+	if loginUrl == "" {
+		loginUrl = authUrl
+	} else if _, err := redirectTarget(&auth, loginUrl); err != nil {
 		return err
 	}
 
@@ -65,39 +85,87 @@ func (c *Client) Login(login string, password string) error {
 	data.Set("login", login)
 	data.Set("pass", password)
 
-	req, err := http.NewRequest(http.MethodPost, loginEndpoint, strings.NewReader(data.Encode()))
-
-	if err != nil {
-		return fmt.Errorf("cant create request:\n%w", err)
-	}
-
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-
-	resp, err := c.httpClient.Do(req)
+	resp, err := auth.PostForm(loginUrl, data)
 	if err != nil {
 		return fmt.Errorf("request failed:\n%w", err)
 	}
+	defer resp.Body.Close()
 	if resp.StatusCode >= 400 {
 		return fmt.Errorf("not nice response code :c :%v", resp.StatusCode)
 	}
 
-	_, err = c.request(http.MethodGet, grantUrl, nil)
+	var loginResp struct {
+		Status string `json:"status"`
+		GoTo   string `json:"goTo"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&loginResp); err != nil {
+		return fmt.Errorf("failed to unmarshal login response:\n%w", err)
+	}
+	if loginResp.Status != "ok" || loginResp.GoTo == "" {
+		return fmt.Errorf("login failed (status %q), check login and password", loginResp.Status)
+	}
+
+	next, err := resolveUrl(loginUrl, loginResp.GoTo)
 	if err != nil {
 		return err
 	}
-
-	_, err = c.request(http.MethodGet, tokenInfo, nil)
-	if err != nil && resp == nil {
-		return err
+	for hops := 0; next != ""; hops++ {
+		if hops == maxAuthHops {
+			return fmt.Errorf("librus authorization exceeded the redirect limit")
+		}
+		next, err = redirectTarget(&auth, next)
+		if err != nil {
+			return err
+		}
 	}
 
+	tokenResp, err := c.request(http.MethodGet, tokenInfoUrl, nil)
+	if tokenResp != nil {
+		tokenResp.Body.Close()
+	}
+	if err != nil {
+		return fmt.Errorf("login finished but api session wasn't created:\n%w", err)
+	}
+
+	c.logged_in = true
 	return nil
+}
+
+// redirectTarget sends GET to target and returns absolute Location of the response, or "" if it didn't redirect.
+func redirectTarget(client *http.Client, target string) (string, error) {
+	resp, err := client.Get(target)
+	if err != nil {
+		return "", fmt.Errorf("request failed:\n%w", err)
+	}
+	resp.Body.Close()
+	if resp.StatusCode >= 400 {
+		return "", fmt.Errorf("not nice response code :c :%v", resp.StatusCode)
+	}
+
+	location := resp.Header.Get("Location")
+	if location == "" {
+		return "", nil
+	}
+	return resolveUrl(target, location)
+}
+
+func resolveUrl(base, ref string) (string, error) {
+	baseUrl, err := url.Parse(base)
+	if err != nil {
+		return "", fmt.Errorf("invalid url %q:\n%w", base, err)
+	}
+	refUrl, err := baseUrl.Parse(ref)
+	if err != nil {
+		return "", fmt.Errorf("invalid url %q:\n%w", ref, err)
+	}
+	return refUrl.String(), nil
 }
 
 // Helper function for getting resource from api.
 func (c *Client) Get(resource string, body io.Reader) (*http.Response, error) {
 	resp, err := c.request(http.MethodGet, c.host+resource, body)
-	if resp.StatusCode == 401 {
+	if resp != nil && resp.StatusCode == http.StatusUnauthorized {
+		resp.Body.Close()
 		c.logged_in = false
 		return nil, SessionExpiredError{}
 	}
