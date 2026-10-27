@@ -30,7 +30,7 @@ type ref struct {
 }
 
 // flexString decodes identifiers that Librus sends either as strings or as
-// JSON numbers (e.g. attendance ids: 5 or "t209235"). null decodes to "".
+// JSON numbers (e.g. attendance ids: 5 or "t12345"). null decodes to "".
 type flexString string
 
 func (f *flexString) UnmarshalJSON(b []byte) error {

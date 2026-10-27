@@ -9,7 +9,7 @@ import (
 // Attendance is the student's attendance at a single lesson.
 type Attendance struct {
 	client *Client
-	// ID is a number for regular lessons and a string like "t209235" for
+	// ID is a number for regular lessons and a string like "t12345" for
 	// lessons during trips.
 	ID        string
 	LessonID  int
