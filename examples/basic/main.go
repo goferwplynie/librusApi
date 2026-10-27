@@ -1,38 +1,32 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
-	"github.com/goferwplynie/librusApi"
+	librus "github.com/goferwplynie/librusApi"
 	"github.com/joho/godotenv"
 )
 
 func main() {
-	err := godotenv.Load()
-	if err != nil {
+	if err := godotenv.Load(); err != nil {
 		panic(err)
 	}
 
 	login := os.Getenv("LIBRUS_LOGIN")
 	password := os.Getenv("LIBRUS_PASSWORD")
 
-	client := librusApi.New()
-
+	client := librus.New()
 	if err := client.Login(login, password); err != nil {
 		panic(err)
 	}
 
-	userInfo, err := librusApi.WithReauth(
-		func() (*librusApi.UserInfo, error) {
-			return librusApi.GetUserInfo(client)
-		},
-		func() error {
-			return client.Login(login, password)
-		},
-		1)
+	me, err := librus.WithReauth(client.Me, func() error {
+		return client.Login(login, password)
+	}, 1)
 	if err != nil {
 		panic(err)
 	}
 
-	println("Hello", userInfo.User.FirstName)
+	fmt.Println("Hello", me.User.FirstName)
 }

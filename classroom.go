@@ -1,4 +1,4 @@
-package librusApi
+package librus
 
 import (
 	"encoding/json"
@@ -19,9 +19,9 @@ type Classroom struct {
 	Name             string  `json:"Name"`
 }
 
-// Get all listed classrooms
-func GetClassrooms(c *Client) ([]Classroom, error) {
-	resp, err := c.Get("Classrooms", nil)
+// Classrooms returns all classrooms listed in the school.
+func (c *Client) Classrooms() ([]Classroom, error) {
+	resp, err := c.Get("Classrooms")
 	if err != nil {
 		return nil, err
 	}

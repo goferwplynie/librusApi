@@ -1,4 +1,4 @@
-package librusApi
+package librus
 
 import (
 	"encoding/json"
@@ -17,25 +17,29 @@ type User struct {
 	GroupID                  int    `json:"GroupId"`
 }
 
-func GetUser(c *Client, id int) (*User, error) {
+// User returns the user (e.g. a teacher) with the given id.
+func (c *Client) User(id int) (*User, error) {
 	strId := strconv.Itoa(id)
 
-	resp, err := c.Get("Users/"+strId, nil)
+	resp, err := c.Get("Users/" + strId)
 	if err != nil {
 		return nil, err
 	}
 	defer resp.Body.Close()
 
-	var user User
-	if err := json.NewDecoder(resp.Body).Decode(&user); err != nil {
+	var userResp struct {
+		User User `json:"User"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&userResp); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal json:\n%w", err)
 	}
 
-	return &user, nil
+	return &userResp.User, nil
 }
 
-func GetUsers(c *Client) ([]User, error) {
-	resp, err := c.Get("Users", nil)
+// Users returns all users visible to the logged in account.
+func (c *Client) Users() ([]User, error) {
+	resp, err := c.Get("Users")
 	if err != nil {
 		return nil, err
 	}

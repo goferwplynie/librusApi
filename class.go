@@ -1,4 +1,4 @@
-package librusApi
+package librus
 
 import (
 	"encoding/json"
@@ -27,9 +27,9 @@ type ClassTutor struct {
 	URL string `json:"Url"`
 }
 
-// Get class information
-func GetClass(c *Client) (*Class, error) {
-	resp, err := c.Get("Classes", nil)
+// Class returns information about the logged in student's class.
+func (c *Client) Class() (*Class, error) {
+	resp, err := c.Get("Classes")
 	if err != nil {
 		return nil, err
 	}

@@ -1,4 +1,4 @@
-package librusApi
+package librus
 
 import (
 	"encoding/json"
@@ -33,9 +33,9 @@ type UserInfo struct {
 	} `json:"Class"`
 }
 
-// get current user information
-func GetUserInfo(c *Client) (*UserInfo, error) {
-	resp, err := c.Get("Me", nil)
+// Me returns information about the logged in account.
+func (c *Client) Me() (*UserInfo, error) {
+	resp, err := c.Get("Me")
 
 	if err != nil {
 		return nil, err

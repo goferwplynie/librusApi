@@ -1,4 +1,4 @@
-package librusApi
+package librus
 
 import (
 	"encoding/json"
@@ -48,9 +48,9 @@ type Variant struct {
 	Name        string `json:"Name"`
 }
 
-// Get school information
-func GetSchool(c *Client) (*School, error) {
-	resp, err := c.Get("Schools", nil)
+// School returns information about the school.
+func (c *Client) School() (*School, error) {
+	resp, err := c.Get("Schools")
 	if err != nil {
 		return nil, err
 	}

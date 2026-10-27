@@ -1,4 +1,4 @@
-package librusApi
+package librus
 
 import (
 	"encoding/json"
@@ -19,16 +19,16 @@ const (
 
 type Client struct {
 	host       string
-	logged_in  bool
+	loggedIn   bool
 	httpClient *http.Client
 }
 
-// create new client
+// New creates a client. Call Login before fetching any resources.
 func New() *Client {
 	jar, _ := cookiejar.New(nil)
 	return &Client{
-		host:      "https://synergia.librus.pl/gateway/api/2.0/",
-		logged_in: false,
+		host:     "https://synergia.librus.pl/gateway/api/2.0/",
+		loggedIn: false,
 		httpClient: &http.Client{
 			Jar: jar,
 		},
@@ -127,7 +127,7 @@ func (c *Client) Login(login string, password string) error {
 		return fmt.Errorf("login finished but api session wasn't created:\n%w", err)
 	}
 
-	c.logged_in = true
+	c.loggedIn = true
 	return nil
 }
 
@@ -161,12 +161,14 @@ func resolveUrl(base, ref string) (string, error) {
 	return refUrl.String(), nil
 }
 
-// Helper function for getting resource from api.
-func (c *Client) Get(resource string, body io.Reader) (*http.Response, error) {
-	resp, err := c.request(http.MethodGet, c.host+resource, body)
+// Get sends a GET request to a raw API resource (e.g. "Subjects"), relative to
+// https://synergia.librus.pl/gateway/api/2.0/. Use it for endpoints this
+// library doesn't wrap yet. The caller must close the response body.
+func (c *Client) Get(resource string) (*http.Response, error) {
+	resp, err := c.request(http.MethodGet, c.host+resource, nil)
 	if resp != nil && resp.StatusCode == http.StatusUnauthorized {
 		resp.Body.Close()
-		c.logged_in = false
+		c.loggedIn = false
 		return nil, SessionExpiredError{}
 	}
 	return resp, err

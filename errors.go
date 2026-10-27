@@ -1,4 +1,4 @@
-package librusApi
+package librus
 
 import "errors"
 

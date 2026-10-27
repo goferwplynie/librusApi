@@ -35,9 +35,17 @@ Librus API library. I wanted to make some widgets for my system but most of the 
 
 There are a lot of other data endpoints but there is a problem with access to it or how it looks.
 
+## Installation
+
+```sh
+go get github.com/goferwplynie/librusApi
+```
+
+The package is called `librus`.
+
 ## Usage
 
-basic example for getting all available users
+basic example for getting all available users (see also [`examples/basic`](examples/basic/main.go))
 ```go
 package main
 
@@ -45,58 +53,53 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/goferwplynie/librusApi"
-	"github.com/joho/godotenv"
+	librus "github.com/goferwplynie/librusApi"
 )
 
 func main() {
-	err := godotenv.Load()
+	login := os.Getenv("LIBRUS_LOGIN")
+	password := os.Getenv("LIBRUS_PASSWORD")
+
+	client := librus.New()
+	if err := client.Login(login, password); err != nil {
+		panic(err)
+	}
+
+	users, err := librus.WithReauth(client.Users, func() error {
+		return client.Login(login, password)
+	}, 1)
 	if err != nil {
 		panic(err)
 	}
 
-	login := os.Getenv("LIBRUS_LOGIN")
-	password := os.Getenv("LIBRUS_PASSWORD")
-
-	client := librusApi.New()
-
-	client.Login(login, password)
-
-	users, err := librusApi.WithReauth(
-		func() ([]*librusApi.User, error) {
-			return librusApi.GetUsers(client)
-		},
-		func() error {
-			return client.Login(login, password)
-		},
-		1)
-
 	for _, v := range users {
-		fmt.Println(v)
+		fmt.Println(v.FirstName, v.LastName)
 	}
 }
 ```
-first you have to create new client and use login method with your login and password.
+first you have to create new client and log in with your login and password.
 ```go
-	client := librusApi.New()
+	client := librus.New()
+	if err := client.Login(login, password); err != nil {
+		panic(err)
+	}
+```
+after this you can get resources using client methods:
+```go
+me, err := client.Me()
+grades, err := client.Grades()
+teacher, err := grades[0].Teacher()
+```
+For endpoints that aren't wrapped yet you can use `client.Get("Subjects")`, which returns the raw `*http.Response`.
 
-	client.Login(login, password)
-```
-after this you should be able to get all available resources. 1 session is 10-15 minutes long so i recommend using `librusApi.withReauth(method, loginFunc, retries)`.
+1 session is 10-15 minutes long so i recommend using `librus.WithReauth(method, loginFunc, retries)`. It takes any method without arguments (like `client.Users`), so for methods with arguments wrap them in a closure:
 ```go
-	users, err := librusApi.WithReauth(
-		func() ([]*librusApi.User, error) {
-			return librusApi.GetUsers(client)
-		},
-		func() error {
-			return client.Login(login, password)
-		},
-		1)
-```
-All functions that are supposed to get resources from api take `*librusApi.Client` as argument.
-```go
-librusApi.GetUsers(client)
+	user, err := librus.WithReauth(func() (*librus.User, error) {
+		return client.User(id)
+	}, func() error {
+		return client.Login(login, password)
+	}, 1)
 ```
 
-Librus API doesn't explictly say if session expired so when program gets `Access Denied` it assumes that session expired and throws special error `SessionExpiredError`.
-If you decide to not use `librusApi.withReauth` you will have to take care of handling this error case because if you are not logged in client won't make any requests.
+Librus API doesn't explictly say if session expired so when program gets `Access Denied` it assumes that session expired and returns special error `SessionExpiredError` (check it with `librus.IsSessionExpired(err)`).
+If you decide to not use `librus.WithReauth` you will have to take care of handling this error case because if you are not logged in client won't make any requests.

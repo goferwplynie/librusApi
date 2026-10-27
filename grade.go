@@ -1,4 +1,4 @@
-package librusApi
+package librus
 
 import (
 	"encoding/json"
@@ -23,25 +23,9 @@ type Grade struct {
 	IsFinalProposition    bool
 }
 
-type GradeParams struct {
-	client                *Client
-	SubjectId             int
-	StudentId             int
-	CategoryId            int
-	Semester              int
-	AddedById             int
-	Grade                 string
-	Date                  time.Time
-	AddDate               time.Time
-	IsConstituent         bool
-	IsSemesterGrade       bool
-	IsSemesterProposition bool
-	IsFinalGrade          bool
-	IsFinalProposition    bool
-}
-
-func (g Grade) GetTeacher() (*User, error) {
-	return GetUser(g.client, g.AddedById)
+// Teacher returns the user who added the grade.
+func (g Grade) Teacher() (*User, error) {
+	return g.client.User(g.AddedById)
 }
 
 type gradesResponse struct {
@@ -83,9 +67,10 @@ type gradesResponse struct {
 	} `json:"Grades"`
 }
 
-func GetGrades(c *Client) ([]*Grade, error) {
+// Grades returns all grades of the logged in student.
+func (c *Client) Grades() ([]*Grade, error) {
 	grades := make([]*Grade, 0)
-	gradesJsonResp, err := c.Get("Grades", nil)
+	gradesJsonResp, err := c.Get("Grades")
 	if err != nil {
 		return nil, err
 	}
@@ -106,44 +91,26 @@ func GetGrades(c *Client) ([]*Grade, error) {
 			return nil, fmt.Errorf("failed parsing time:\n%w", err)
 		}
 
-		grade := newGrade(GradeParams{
-			client:             c,
-			SubjectId:          v.Subject.ID,
-			StudentId:          v.Student.ID,
-			CategoryId:         v.Category.ID,
-			Semester:           v.Semester,
-			AddedById:          v.AddedBy.ID,
-			Grade:              v.Grade,
-			Date:               date,
-			AddDate:            addDate,
-			IsConstituent:      v.IsConstituent,
-			IsSemesterGrade:    v.IsSemester,
-			IsFinalGrade:       v.IsFinal,
-			IsFinalProposition: v.IsFinalProposition,
-		})
+		grade := &Grade{
+			client:                c,
+			SubjectId:             v.Subject.ID,
+			StudentId:             v.Student.ID,
+			CategoryId:            v.Category.ID,
+			Semester:              v.Semester,
+			AddedById:             v.AddedBy.ID,
+			Grade:                 v.Grade,
+			Date:                  date,
+			AddDate:               addDate,
+			IsConstituent:         v.IsConstituent,
+			IsSemesterGrade:       v.IsSemester,
+			IsSemesterProposition: v.IsSemesterProposition,
+			IsFinalGrade:          v.IsFinal,
+			IsFinalProposition:    v.IsFinalProposition,
+		}
 
 		grades = append(grades, grade)
 
 	}
 
 	return grades, nil
-}
-
-func newGrade(GradeParams GradeParams) *Grade {
-	return &Grade{
-		client:                GradeParams.client,
-		SubjectId:             GradeParams.SubjectId,
-		StudentId:             GradeParams.StudentId,
-		CategoryId:            GradeParams.CategoryId,
-		Semester:              GradeParams.Semester,
-		AddedById:             GradeParams.AddedById,
-		Grade:                 GradeParams.Grade,
-		Date:                  GradeParams.Date,
-		AddDate:               GradeParams.AddDate,
-		IsConstituent:         GradeParams.IsConstituent,
-		IsSemesterGrade:       GradeParams.IsSemesterGrade,
-		IsSemesterProposition: GradeParams.IsSemesterProposition,
-		IsFinalGrade:          GradeParams.IsFinalGrade,
-		IsFinalProposition:    GradeParams.IsFinalProposition,
-	}
 }
