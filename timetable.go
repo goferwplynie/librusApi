@@ -40,6 +40,7 @@ type TimetableTeacher struct {
 
 // OriginalLesson is the lesson that a substitution replaced.
 type OriginalLesson struct {
+	client      *Client
 	Date        time.Time
 	LessonNo    int
 	Start       time.Time
@@ -47,6 +48,12 @@ type OriginalLesson struct {
 	SubjectID   int
 	TeacherID   int
 	ClassroomID int
+}
+
+// Subject fetches the subject of the replaced lesson. It costs one request,
+// so it's only made when called.
+func (o OriginalLesson) Subject(ctx context.Context) (*Subject, error) {
+	return o.client.Subject(ctx, o.SubjectID)
 }
 
 type timetableResponse struct {
@@ -110,7 +117,7 @@ func (c *Client) timetable(ctx context.Context, resource string) ([]TimetableLes
 		}
 		for _, slot := range slots {
 			for _, l := range slot {
-				lesson, err := l.toLesson(date)
+				lesson, err := l.toLesson(c, date)
 				if err != nil {
 					return nil, err
 				}
@@ -128,7 +135,7 @@ func (c *Client) timetable(ctx context.Context, resource string) ([]TimetableLes
 	return lessons, nil
 }
 
-func (l timetableLessonJSON) toLesson(date time.Time) (TimetableLesson, error) {
+func (l timetableLessonJSON) toLesson(c *Client, date time.Time) (TimetableLesson, error) {
 	start, err := atHour(date, l.HourFrom)
 	if err != nil {
 		return TimetableLesson{}, err
@@ -176,6 +183,7 @@ func (l timetableLessonJSON) toLesson(date time.Time) (TimetableLesson, error) {
 			return TimetableLesson{}, err
 		}
 		lesson.Original = &OriginalLesson{
+			client:      c,
 			Date:        orgDate,
 			LessonNo:    int(l.OrgLessonNo),
 			Start:       orgStart,

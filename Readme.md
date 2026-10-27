@@ -48,13 +48,14 @@ go run ./examples/timetable
 |---|---|
 | `Me(ctx)` | logged in account |
 | `Grades(ctx)` | grades (`Grade.Teacher(ctx)` fetches who added it) |
-| `Timetable(ctx, day)` | lessons of the week (Mon-Sun) containing `day`, incl. canceled lessons and substitutions |
+| `Timetable(ctx, day)` | lessons of the week (Mon-Sun) containing `day`, incl. canceled lessons and substitutions (`OriginalLesson.Subject(ctx)` fetches the subject of a replaced lesson) |
 | `TimetableDay(ctx, day)` | lessons of a single day |
 | `Users(ctx)`, `User(ctx, id)` | teachers and other users |
+| `Subjects(ctx)`, `Subject(ctx, id)` | school subjects (`Grade.Subject(ctx)` fetches the subject of a grade) |
 | `Class(ctx)` | student's class |
 | `Classrooms(ctx)` | school classrooms |
 | `School(ctx)` | school info |
-| `Get(ctx, resource)` | raw `*http.Response` for endpoints not wrapped yet, e.g. `Get(ctx, "Subjects")` |
+| `Get(ctx, resource)` | raw `*http.Response` for endpoints not wrapped yet, e.g. `Get(ctx, "Attendances")` |
 
 ### Sessions
 
@@ -78,10 +79,10 @@ if errors.As(err, &apiErr) && apiErr.StatusCode == 403 {
 ### Done
 - [x] Timetable
 - [x] `Me`, `Users`, `Classes`, `Classrooms`, `Schools`
+- [x] `Subjects`
 - [x] `Grades` (IDs only, no subject or category names yet)
 
 ### 1.0
-- [ ] Subjects - `Subjects`
 - [ ] Grade categories and comments - `Grades/Categories`, `Grades/Comments`
 - [ ] Point grades - `PointGrades`
 - [ ] Averages - computed locally from grade weights, because `Grades/Averages` can be disabled by the school

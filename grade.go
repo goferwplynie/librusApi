@@ -27,6 +27,11 @@ func (g Grade) Teacher(ctx context.Context) (*User, error) {
 	return g.client.User(ctx, g.AddedByID)
 }
 
+// Subject returns the subject the grade was given for.
+func (g Grade) Subject(ctx context.Context) (*Subject, error) {
+	return g.client.Subject(ctx, g.SubjectID)
+}
+
 type gradesResponse struct {
 	Grades []struct {
 		ID     int `json:"Id"`
