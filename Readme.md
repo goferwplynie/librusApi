@@ -35,11 +35,12 @@ for _, g := range grades {
 }
 ```
 
-Runnable examples are in [`examples`](examples): [`basic`](examples/basic/main.go) logs in and greets you, [`timetable`](examples/timetable/main.go) prints this week's timetable. They read `LIBRUS_LOGIN` and `LIBRUS_PASSWORD` from a `.env` file in the repo root:
+Runnable examples are in [`examples`](examples): [`basic`](examples/basic/main.go) logs in and greets you, [`timetable`](examples/timetable/main.go) prints this week's timetable and [`all`](examples/all/main.go) shows everything the library can fetch. They read `LIBRUS_LOGIN` and `LIBRUS_PASSWORD` from a `.env` file in the repo root:
 
 ```sh
 go run ./examples/basic
 go run ./examples/timetable
+go run ./examples/all
 ```
 
 ### Available methods
@@ -90,19 +91,16 @@ if errors.As(err, &apiErr) && apiErr.StatusCode == 403 {
 
 ## Roadmap
 
-### Done
+### Done (1.0)
 - [x] Timetable
 - [x] `Me`, `Users`, `Classes`, `Classrooms`, `Schools`
-- [x] `Subjects`
+- [x] `Subjects`, `Grades`
 - [x] Grade categories and comments
 - [x] Point grades
 - [x] Averages - computed locally from grade weights, because `Grades/Averages` can be disabled by the school
 - [x] Attendance and lessons
 - [x] Justifications, free days and substitutions
 - [x] Tests and quizzes (terminarz) and homework
-- [x] `Grades`
-
-### 1.0
 
 ### Later
 - [ ] Combined calendar (timetable, tests, trips, free days)
